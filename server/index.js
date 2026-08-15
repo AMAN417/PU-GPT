@@ -75,16 +75,37 @@ GET FIELD FROM NOTICE
 */
 
 function getNoticeField(content, field) {
-  const regex = new RegExp(
-    `^${field}:\\s*(.*)$`,
-    "mi"
+  const lines = content.split(/\r?\n/);
+  const fieldPrefix = `${field}:`;
+
+  const startIndex = lines.findIndex((line) =>
+    line.trim().startsWith(fieldPrefix)
   );
 
-  const match = content.match(regex);
+  if (startIndex === -1) {
+    return "";
+  }
 
-  return match ? match[1].trim() : "";
+  const firstLine = lines[startIndex]
+    .trim()
+    .slice(fieldPrefix.length)
+    .trim();
+
+  const valueLines = [firstLine];
+
+  for (let i = startIndex + 1; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Stop when another FIELD: starts
+    if (/^[A-Z][A-Z0-9_ ]*:\s*/.test(line.trim())) {
+      break;
+    }
+
+    valueLines.push(line.trim());
+  }
+
+  return valueLines.join("\n").trim();
 }
-
 /*
 ==========================================
 GET ALL NOTICES
@@ -1505,3 +1526,14 @@ app.listen(
     );
   }
 );
+module.exports = {
+  getNoticeField,
+  sortNoticesByDate,
+  getCurrentNotices,
+  getExpiredNotices,
+  getUpcomingNotices,
+  filterNoticesByCategory,
+  findRelevantKnowledge,
+  getKnowledge,
+  getNotices,
+};

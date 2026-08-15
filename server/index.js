@@ -434,14 +434,19 @@ in the PU-GPT notices directory.
   ------------------------------------------
   */
 
-  if (selectedNotices.length === 0) {
-    return `
+if (selectedNotices.length === 0) {
+  return `
 NOTICE SEARCH RESULT:
 
-No matching ${selectionType} were found
-in the PU-GPT knowledge base.
+There are currently 0 ${selectionType} in the PU-GPT knowledge base.
+
+IMPORTANT:
+This means the requested notice category was checked and no notices currently match it.
+Do NOT say the information is unavailable.
+Do NOT say the knowledge base does not contain notice information.
+Clearly state that there are currently 0 ${selectionType}.
 `;
-  }
+}
 
   const formatted = selectedNotices
     .map((notice, index) => {

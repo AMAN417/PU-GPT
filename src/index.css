@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #020617;
+  color: white;
+  font-family: Inter, sans-serif;
+}
+.ai-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(59,130,246,0.35), transparent 70%);
+  filter: blur(80px);
+  animation: moveGlow 8s infinite alternate;
+}
+
+
+@keyframes moveGlow {
+
+  from {
+    transform: translate(-100px,-50px);
+  }
+
+  to {
+    transform: translate(100px,50px);
+  }
+
+}

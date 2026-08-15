@@ -1,0 +1,19 @@
+TITLE: Example Punjabi University Admission Notice
+
+DATE: 2026-08-14
+
+ACADEMIC SESSION: 2026-27
+
+CATEGORY: Admission
+
+PROGRAMME: B.Tech CSE
+
+STATUS: CURRENT
+
+IMPORTANT DATE: Not specified
+
+SUMMARY:
+This is a test admission notice for the PU-GPT notice system.
+
+SOURCE:
+Test data for development only.

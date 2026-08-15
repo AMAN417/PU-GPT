@@ -1,0 +1,82 @@
+PU-GPT FEES KNOWLEDGE BASE
+
+University: Punjabi University, Patiala, Punjab
+
+==================================================
+B.TECH COMPUTER SCIENCE AND ENGINEERING (CSE)
+==================================================
+
+Course:
+B.Tech. (Computer Science and Engineering: CSE)
+
+Duration:
+4 Years
+
+Academic Session:
+2026-27
+
+==================================================
+VERIFIED 2026-27 FEE INFORMATION
+==================================================
+
+According to the official Punjabi University admission
+document for B.Tech CSE, Session 2026-27:
+
+Semester Fee and Security:
+₹64,755
+
+SAF Fund:
+₹1,000
+
+Additional fee mentioned for SC Students with family
+income less than ₹2.5 lakh:
+₹2,000
+
+The official document states that all other applicants
+have to deposit the full course fee.
+
+==================================================
+IMPORTANT
+==================================================
+
+The ₹64,755 amount is identified by the official document
+as "Semester Fee and Security".
+
+The ₹1,000 SAF Fund is listed separately.
+
+Therefore, PU-GPT must NOT incorrectly describe ₹64,755
+as the complete amount including every additional charge.
+
+If a student asks:
+
+"What is the B.Tech CSE fee?"
+
+PU-GPT should answer:
+
+"For the 2026-27 session, the official Punjabi University
+B.Tech CSE admission document lists ₹64,755 as the Semester
+Fee and Security. An additional ₹1,000 SAF Fund is also
+listed separately. The document also mentions a ₹2,000
+payment for SC students with family income below ₹2.5 lakh."
+
+If the student asks specifically about SC fee concessions,
+explain the ₹2,000 amount separately and do not assume that
+it replaces the semester fee unless the official document
+explicitly says so.
+
+==================================================
+SOURCE
+==================================================
+
+Official Punjabi University B.Tech CSE 2026-27 admission
+document:
+
+https://pupadmissions.ac.in/Download/P5256BB8E.pdf
+
+Document:
+B.Tech. (Computer Science and Engineering: CSE)-4 Years
+Allocation-6 for Waiting List Candidates
+Session 2026-27
+
+Fee payment dates:
+11-13 August 2026

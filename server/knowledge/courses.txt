@@ -1,0 +1,174 @@
+PU-GPT COURSE KNOWLEDGE BASE
+
+University: Punjabi University, Patiala, Punjab
+
+IMPORTANT:
+Course information can change over time. This knowledge base
+contains the course information currently available to PU-GPT.
+
+==================================================
+COURSES AT PUNJABI UNIVERSITY
+==================================================
+
+Punjabi University offers undergraduate, postgraduate,
+diploma, certificate and research programmes across
+multiple departments and campuses.
+
+==================================================
+SELECTED COURSES
+==================================================
+
+1. B.A. (Hons.) School in Punjabi
+
+Duration: 3 years
+Eligibility: 10+2
+Admission: Based on merit in the qualifying class.
+
+
+2. M.A. Punjabi (Hons.)
+
+Duration: 2 years
+Eligibility: B.A. Hons. School Course in Punjabi or
+B.A. with Punjabi Literature as an elective.
+Admission: Based on merit in the qualifying class.
+
+
+3. B.Tech. Computer Science and Engineering (CSE)
+
+Duration: 4 years
+
+B.Tech. CSE is included in the engineering programmes
+available in this knowledge base.
+
+
+4. B.Tech. and 6-Year Integrated B.Tech-MBA Programme
+
+Duration: 6 years
+
+This integrated programme is included in the course
+information available in this knowledge base.
+
+Eligibility and admission criteria are not specified
+in this knowledge base.
+
+
+5. 5-Year Integrated M.Sc. Physics
+
+Duration: 5 years
+Eligibility: 10+2 Non-Medical with the required marks
+as specified by the university.
+Admission: Merit-based according to university criteria.
+
+
+6. B.C.A.
+
+Duration: 3 years
+
+B.C.A. programmes are available at various Punjabi
+University campuses/colleges.
+
+Specific eligibility and admission criteria are not
+specified in this knowledge base.
+
+
+7. B.Com.
+
+Duration: Usually 3 years for semester-system programmes.
+
+B.Com. programmes are available through Punjabi University
+departments, campuses and affiliated colleges.
+
+
+8. B.A.
+
+Duration: 3 years for semester-system programmes.
+
+B.A. programmes are available through Punjabi University
+campuses and affiliated colleges.
+
+
+9. M.Com.
+
+Duration: 2 years for several M.Com. programmes.
+
+Specific eligibility requirements are not specified
+in this knowledge base.
+
+
+10. M.A. Economics
+
+Duration: 2 years for listed programmes.
+
+Specific eligibility requirements are not specified
+in this knowledge base.
+
+
+11. M.A. Defence and Strategic Studies
+
+Duration: 2 years
+
+The programme is included in the course information
+available in this knowledge base.
+
+
+12. LL.B.
+
+Duration: 3 years
+
+LL.B. programmes include Morning and Second Shift
+programmes.
+
+Specific current admission procedure is not specified
+in this knowledge base.
+
+
+13. LL.M.
+
+LL.M. programmes include two-year and one-year programmes.
+
+Specific admission requirements are not specified
+in this knowledge base.
+
+
+14. PGDCA
+
+Duration: 1 year for listed programmes.
+
+Specific eligibility and admission criteria depend on
+the programme and are not fully specified in this
+knowledge base.
+
+
+15. M.Sc. IT
+
+M.Sc. IT programmes are available at Punjabi University
+campuses/colleges.
+
+Specific duration and eligibility requirements are not
+specified in this knowledge base.
+
+
+==================================================
+IMPORTANT COURSE RULE
+==================================================
+
+PU-GPT must NOT guess or invent:
+
+- Exact current fees
+- Current number of seats
+- Current admission dates
+- Current eligibility requirements
+- Current entrance examination dates
+- Current admission procedures
+- Current cutoffs
+- Current scholarship amounts
+- Current hostel information
+
+unless the information is explicitly available in the
+PU-GPT knowledge base.
+
+If information is missing, respond:
+
+"I don't currently have that information in the PU-GPT knowledge base."
+
+Do not guess the missing information.

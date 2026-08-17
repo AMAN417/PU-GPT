@@ -234,12 +234,12 @@ describe("6. Regression Protection", () => {
     assert(Array.isArray(notices), "getNotices must return an array");
     assert(notices.length > 0, "At least one notice must be loaded");
 
-    const exampleNotice = notices.find((n) => n.file.includes("2026-08-14-example"));
-    assert(exampleNotice, "2026-08-14-example.txt notice must be found");
-    assert.strictEqual(exampleNotice.category, "Admission");
-    assert.strictEqual(exampleNotice.status, "CURRENT");
+    const btechNotice = notices.find((n) => n.file.includes("2026-07-29-btech-cse-allotment-list-4"));
+    assert(btechNotice, "2026-07-29-btech-cse-allotment-list-4.txt notice must be found");
+    assert.strictEqual(btechNotice.category, "Admission");
+    assert.strictEqual(btechNotice.status, "CURRENT");
     assert(
-      exampleNotice.summary.includes("test admission notice"),
+      btechNotice.summary.includes("allotment list"),
       "Summary must be parsed correctly"
     );
   });

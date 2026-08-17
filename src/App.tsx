@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Chat from "./pages/Chat";
+import Notices from "./pages/Notices";
 
 
 function Home() {
@@ -54,6 +55,10 @@ function App() {
         element={<Chat />}
       />
 
+      <Route 
+        path="/notices" 
+        element={<Notices />}
+      />
 
     </Routes>
   );

@@ -1,4 +1,5 @@
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -15,9 +16,11 @@ function Home() {
           Placements, Hostels and more.
         </p>
 
-        <button className="mt-10 bg-blue-600 px-8 py-4 rounded-xl text-lg hover:bg-blue-700">
-          Start Chat
-        </button>
+        <Link to="/chat">
+          <button className="mt-10 bg-blue-600 px-8 py-4 rounded-xl text-lg hover:bg-blue-700">
+            Start Chat
+          </button>
+        </Link>
       </main>
     </>
   );

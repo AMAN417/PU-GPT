@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 type Message = {
   sender: "user" | "ai";
@@ -18,6 +19,8 @@ function getTime() {
 
 function Chat() {
   const [message, setMessage] = useState("");
+  const [searchParams] = useSearchParams();
+  const autoSentRef = useRef(false);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -38,11 +41,26 @@ function Chat() {
     });
   }, [messages, isLoading]);
 
-  // Send message
-  async function sendMessage() {
-    if (!message.trim() || isLoading) return;
+  // Auto-send query from URL params (used by navbar topic links)
+  useEffect(() => {
+    if (autoSentRef.current) return;
+    const query = searchParams.get("query");
+    if (query && query.trim()) {
+      autoSentRef.current = true;
+      setMessage(query.trim());
+      // Small delay so state settles before sending
+      setTimeout(() => {
+        sendMessageText(query.trim());
+      }, 300);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const userText = message.trim();
+  // Core send logic (accepts explicit text or falls back to state)
+  async function sendMessageText(text: string) {
+    if (!text.trim() || isLoading) return;
+
+    const userText = text.trim();
 
     const userMessage: Message = {
       sender: "user",
@@ -50,43 +68,29 @@ function Chat() {
       time: getTime(),
     };
 
-    const previousMessages = messages;
-
     setMessages((prev) => [...prev, userMessage]);
     setMessage("");
     setIsLoading(true);
 
     try {
-      // Convert frontend history into backend history
-      const history = previousMessages.map((msg) => ({
+      const history = messages.map((msg) => ({
         role: msg.sender === "user" ? "user" : "assistant",
         content: msg.text,
       }));
 
       const response = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          message: userText,
-          history,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText, history }),
       });
 
-      const contentType =
-        response.headers.get("content-type") || "";
-
+      const contentType = response.headers.get("content-type") || "";
       const data = contentType.includes("application/json")
         ? await response.json()
         : { reply: await response.text() };
 
       if (!response.ok) {
-        throw new Error(
-          data.reply || "Backend request failed."
-        );
+        throw new Error(data.reply || "Backend request failed.");
       }
 
       const aiMessage: Message = {
@@ -105,11 +109,27 @@ function Chat() {
             : "⚠️ Unable to connect to PU-GPT.",
         time: getTime(),
       };
-
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
+  }
+
+  // Send message from textarea
+  async function sendMessage() {
+    if (!message.trim() || isLoading) return;
+
+    const userText = message.trim();
+
+    const userMessage: Message = {
+      sender: "user",
+      text: userText,
+      time: getTime(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setMessage("");
+    await sendMessageText(userText);
   }
 
   // Start a new conversation

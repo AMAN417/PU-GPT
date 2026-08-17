@@ -75,37 +75,16 @@ GET FIELD FROM NOTICE
 */
 
 function getNoticeField(content, field) {
-  const lines = content.split(/\r?\n/);
-  const fieldPrefix = `${field}:`;
-
-  const startIndex = lines.findIndex((line) =>
-    line.trim().startsWith(fieldPrefix)
+  const regex = new RegExp(
+    `^${field}:\\s*([\\s\\S]*?)(?=\\n[A-Z\\s]+:|$(?![\\s\\S]))`,
+    "mi"
   );
 
-  if (startIndex === -1) {
-    return "";
-  }
+  const match = content.match(regex);
 
-  const firstLine = lines[startIndex]
-    .trim()
-    .slice(fieldPrefix.length)
-    .trim();
-
-  const valueLines = [firstLine];
-
-  for (let i = startIndex + 1; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Stop when another FIELD: starts
-    if (/^[A-Z][A-Z0-9_ ]*:\s*/.test(line.trim())) {
-      break;
-    }
-
-    valueLines.push(line.trim());
-  }
-
-  return valueLines.join("\n").trim();
+  return match ? match[1].trim() : "";
 }
+
 /*
 ==========================================
 GET ALL NOTICES
@@ -434,19 +413,14 @@ in the PU-GPT notices directory.
   ------------------------------------------
   */
 
-if (selectedNotices.length === 0) {
-  return `
+  if (selectedNotices.length === 0) {
+    return `
 NOTICE SEARCH RESULT:
 
-There are currently 0 ${selectionType} in the PU-GPT knowledge base.
-
-IMPORTANT:
-This means the requested notice category was checked and no notices currently match it.
-Do NOT say the information is unavailable.
-Do NOT say the knowledge base does not contain notice information.
-Clearly state that there are currently 0 ${selectionType}.
+No matching ${selectionType} were found
+in the PU-GPT knowledge base.
 `;
-}
+  }
 
   const formatted = selectedNotices
     .map((notice, index) => {
@@ -511,131 +485,145 @@ FIND RELEVANT KNOWLEDGE FILES
 
 function findRelevantKnowledge(message) {
   const text = normalizeText(message);
-
   const files = getKnowledgeFiles(knowledgeDir);
 
-  if (files.length === 0) {
+  if (files.length === 0 || !text) {
     return [];
   }
 
-  const keywords = [];
+  const scores = {};
+  files.forEach((f) => {
+    const rel = path.relative(knowledgeDir, f).replace(/\\/g, "/");
+    scores[rel] = 0;
+  });
 
-  // Admissions
+  // 1. Admissions
+  const admissionPatterns = [
+    /\b(admission|admissions|apply|applying|application|applicant|applicants)\b/i,
+    /\b(eligibility|eligible|entrance|cutoff|cut-off|10\+2|form\s*18)\b/i,
+    /\b(merit\s*criteria|admission\s*process|how\s+to\s+apply|pupadmissions)\b/i,
+  ];
+  admissionPatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["admissions.txt"] = (scores["admissions.txt"] || 0) + 2;
+    }
+  });
+
+  // 2. Courses
+  const coursePatterns = [
+    /\b(course|courses|programme|programmes|program|programs|curriculum|degree)\b/i,
+    /\b(b\.?tech|btech|cse|computer\s*science|m\.?sc|msc|b\.?a|ba|m\.?a|ma|integrated)\b/i,
+    /\b(duration|branch|branches|specialization|departments?)\b/i,
+  ];
+  coursePatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["courses.txt"] = (scores["courses.txt"] || 0) + 2;
+    }
+  });
+
+  // 3. Fees
+  const feePatterns = [
+    /\b(fee|fees|tuition|cost|costs|expense|expenses|saf\s*fund|charge|charges)\b/i,
+    /\b(semester\s*fee|fee\s*structure|how\s+much\s+(does|is)|payment)\b/i,
+  ];
+  feePatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["fees.txt"] = (scores["fees.txt"] || 0) + 3;
+    }
+  });
+
+  // 4. Hostel
+  const hostelPatterns = [
+    /\b(hostel|hostels|dorm|dormitory|dormitories|residence|residential)\b/i,
+    /\b(mess|room|rooms|accommodation|accommodations|stay|staying)\b/i,
+  ];
+  hostelPatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["hostel.txt"] = (scores["hostel.txt"] || 0) + 3;
+    }
+  });
+
+  // 5. Scholarships
+  const scholarshipPatterns = [
+    /\b(scholarship|scholarships|financial\s*aid|financial\s*assistance|financial\s*support)\b/i,
+    /\b(stipend|stipends|freeship|post-?matric|pms|minority\s*scholarship|golden\s*heart|student-?aid|fee\s*concession)\b/i,
+  ];
+  scholarshipPatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["scholarships.txt"] = (scores["scholarships.txt"] || 0) + 3;
+    }
+  });
+
+  // 6. University Overview / PU-GPT info
+  const universityDirectPatterns = [
+    /\b(about\s+(the\s+)?university|about\s+punjabi\s+university|about\s+pu|where\s+is\s+punjabi\s+university)\b/i,
+    /\b(university\s+location|university\s+overview|campus\s+overview|vice\s*chancellor|what\s+is\s+pu-?gpt)\b/i,
+  ];
+  universityDirectPatterns.forEach((p) => {
+    if (p.test(text)) {
+      scores["university.txt"] = (scores["university.txt"] || 0) + 3;
+    }
+  });
+
+  // If general "university" or "campus" is present, but NO other specific topic file matched
+  const hasSpecificTopicMatch =
+    (scores["admissions.txt"] || 0) > 0 ||
+    (scores["courses.txt"] || 0) > 0 ||
+    (scores["fees.txt"] || 0) > 0 ||
+    (scores["hostel.txt"] || 0) > 0 ||
+    (scores["scholarships.txt"] || 0) > 0;
+
   if (
-    text.includes("admission") ||
-    text.includes("apply") ||
-    text.includes("application") ||
-    text.includes("eligibility") ||
-    text.includes("entrance")
+    !hasSpecificTopicMatch &&
+    /\b(punjabi\s*university|university|campus|patiala)\b/i.test(text)
   ) {
-    keywords.push("admissions.txt");
+    scores["university.txt"] = (scores["university.txt"] || 0) + 1;
   }
 
-  // Courses
-  if (
-    text.includes("course") ||
-    text.includes("b.tech") ||
-    text.includes("btech") ||
-    text.includes("cse") ||
-    text.includes("computer science") ||
-    text.includes("degree") ||
-    text.includes("duration")
-  ) {
-    keywords.push("courses.txt");
-  }
-
-  // Fees
-  if (
-    text.includes("fee") ||
-    text.includes("fees") ||
-    text.includes("cost") ||
-    text.includes("tuition")
-  ) {
-    keywords.push("fees.txt");
-  }
-
-  // Hostel
-  if (
-    text.includes("hostel") ||
-    text.includes("room") ||
-    text.includes("mess")
-  ) {
-    keywords.push("hostel.txt");
-  }
-
-  // Scholarships
-  if (
-    text.includes("scholarship") ||
-    text.includes("financial aid") ||
-    text.includes("financial assistance")
-  ) {
-    keywords.push("scholarships.txt");
-  }
-
-  // University
-  if (
-    text.includes("university") ||
-    text.includes("campus") ||
-    text.includes("department") ||
-    text.includes("contact")
-  ) {
-    keywords.push("university.txt");
-  }
-
-  // Notices
+  // 7. Notices
   if (isNoticeQuestion(message)) {
-    for (const file of files) {
-      const relativePath = path.relative(
-        knowledgeDir,
-        file
-      );
-
-      if (
-        relativePath
-          .toLowerCase()
-          .startsWith("notices" + path.sep)
-      ) {
-        keywords.push(relativePath);
+    Object.keys(scores).forEach((fileKey) => {
+      if (fileKey.startsWith("notices/")) {
+        scores[fileKey] = 2;
       }
+    });
+  }
+
+  // Filter matched files with score > 0, sorted by relevance score descending
+  const matchedRelFiles = Object.entries(scores)
+    .filter(([_, score]) => score > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([fileKey]) => fileKey);
+
+  // Safety Cap: Maximum 4 files and 25,000 characters of context
+  const MAX_FILES = 4;
+  const MAX_CHARS = 25000;
+  let totalChars = 0;
+  const selectedFiles = [];
+
+  for (const relFile of matchedRelFiles) {
+    const fullPath = files.find(
+      (f) =>
+        path.relative(knowledgeDir, f).replace(/\\/g, "/") === relFile
+    );
+    if (!fullPath) continue;
+
+    try {
+      const stats = fs.statSync(fullPath);
+      if (
+        selectedFiles.length >= MAX_FILES ||
+        (totalChars + stats.size > MAX_CHARS && selectedFiles.length > 0)
+      ) {
+        break;
+      }
+      selectedFiles.push(fullPath);
+      totalChars += stats.size;
+    } catch {
+      selectedFiles.push(fullPath);
     }
   }
 
-  /*
-  ------------------------------------------
-  REMOVE DUPLICATES
-  ------------------------------------------
-  */
-
-  const uniqueKeywords = [
-    ...new Set(
-      keywords.map((item) =>
-        item.toLowerCase()
-      )
-    ),
-  ];
-
-  /*
-  ------------------------------------------
-  MATCH FILES
-  ------------------------------------------
-  */
-
-  return files.filter((filePath) => {
-    const relativePath = path
-      .relative(
-        knowledgeDir,
-        filePath
-      )
-      .toLowerCase();
-
-    return uniqueKeywords.some(
-      (keyword) =>
-        relativePath === keyword ||
-        relativePath.endsWith(
-          path.sep + keyword
-        )
-    );
-  });
+  return selectedFiles;
 }
 
 function getKnowledge(filePaths = null) {
@@ -1437,108 +1425,116 @@ START SERVER
 ==========================================
 */
 
-app.listen(
-  PORT,
-  () => {
-    let knowledgeFiles = [];
+if (require.main === module) {
+  app.listen(
+    PORT,
+    () => {
+      let knowledgeFiles = [];
 
-    try {
-      knowledgeFiles =
-        getKnowledgeFiles(
-          knowledgeDir
-        );
-    } catch {
-      // Knowledge directory may not exist yet.
-    }
-
-    const notices =
-      getNotices();
-
-    console.log(
-      `\n🚀 PU-GPT backend running at http://localhost:${PORT}`
-    );
-
-    console.log(
-      `🔑 OpenRouter API key loaded: ${
-        apiKey
-          ? "YES"
-          : "NO"
-      }`
-    );
-
-    console.log(
-      `📚 Knowledge files loaded: ${
-        knowledgeFiles.length
-      }`
-    );
-
-    console.log(
-      `📢 Notices loaded: ${
-        notices.length
-      }`
-    );
-
-    console.log(
-      `🟢 Current notices: ${
-        getCurrentNotices(
-          notices
-        ).length
-      }`
-    );
-
-    console.log(
-      `🔴 Expired notices: ${
-        getExpiredNotices(
-          notices
-        ).length
-      }`
-    );
-
-    console.log(
-      `🔵 Upcoming notices: ${
-        getUpcomingNotices(
-          notices
-        ).length
-      }`
-    );
-
-    console.log(
-      "📄 Files:"
-    );
-
-    if (
-      knowledgeFiles.length
-    ) {
-      knowledgeFiles.forEach(
-        (file) => {
-          console.log(
-            "   - " +
-              path.relative(
-                knowledgeDir,
-                file
-              )
+      try {
+        knowledgeFiles =
+          getKnowledgeFiles(
+            knowledgeDir
           );
-        }
-      );
-    } else {
+      } catch {
+        // Knowledge directory may not exist yet.
+      }
+
+      const notices =
+        getNotices();
+
       console.log(
-        "   - NONE"
+        `\n🚀 PU-GPT backend running at http://localhost:${PORT}`
+      );
+
+      console.log(
+        `🔑 OpenRouter API key loaded: ${
+          apiKey
+            ? "YES"
+            : "NO"
+        }`
+      );
+
+      console.log(
+        `📚 Knowledge files loaded: ${
+          knowledgeFiles.length
+        }`
+      );
+
+      console.log(
+        `📢 Notices loaded: ${
+          notices.length
+        }`
+      );
+
+      console.log(
+        `🟢 Current notices: ${
+          getCurrentNotices(
+            notices
+          ).length
+        }`
+      );
+
+      console.log(
+        `🔴 Expired notices: ${
+          getExpiredNotices(
+            notices
+          ).length
+        }`
+      );
+
+      console.log(
+        `🔵 Upcoming notices: ${
+          getUpcomingNotices(
+            notices
+          ).length
+        }`
+      );
+
+      console.log(
+        "📄 Files:"
+      );
+
+      if (
+        knowledgeFiles.length
+      ) {
+        knowledgeFiles.forEach(
+          (file) => {
+            console.log(
+              "   - " +
+                path.relative(
+                  knowledgeDir,
+                  file
+                )
+            );
+          }
+        );
+      } else {
+        console.log(
+          "   - NONE"
+        );
+      }
+
+      console.log(
+        `🤖 Model: openrouter/free\n`
       );
     }
+  );
+}
 
-    console.log(
-      `🤖 Model: openrouter/free\n`
-    );
-  }
-);
 module.exports = {
+  app,
+  getKnowledgeFiles,
   getNoticeField,
+  getNotices,
   sortNoticesByDate,
+  normalizeText,
   getCurrentNotices,
   getExpiredNotices,
   getUpcomingNotices,
   filterNoticesByCategory,
+  isNoticeQuestion,
+  buildNoticeContext,
   findRelevantKnowledge,
   getKnowledge,
-  getNotices,
 };

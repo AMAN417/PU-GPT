@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 function Hero() {
   return (
@@ -29,13 +30,17 @@ function Hero() {
 
         <div className="mt-10 flex justify-center gap-5">
 
-          <button className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-lg">
-            Start Chat
-          </button>
+          <Link to="/chat">
+            <button className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-lg transition">
+              Start Chat
+            </button>
+          </Link>
 
-          <button className="border border-gray-600 px-8 py-4 rounded-xl hover:bg-gray-800">
-            Explore Campus
-          </button>
+          <Link to="/notices">
+            <button className="border border-gray-600 px-8 py-4 rounded-xl hover:bg-gray-800 transition">
+              Explore Notices
+            </button>
+          </Link>
 
         </div>
 
